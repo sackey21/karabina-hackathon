@@ -1,77 +1,33 @@
 <template>
-  <v-container>
-    <v-row class="text-center">
-      <v-col cols="12">
-        <v-img :src="require('../assets/logo.svg')" class="my-3" contain height="200" />
-      </v-col>
-
-      <v-col class="mb-4">
-        <h1 class="display-2 font-weight-bold mb-3">Welcome to Vuetify まっぷぺーじ</h1>
-
-        <p class="subheading font-weight-regular">
-          For help and collaboration with other Vuetify developers,
-          <br />please join our online
-          <a href="https://community.vuetifyjs.com" target="_blank">Discord Community</a>
-        </p>
-      </v-col>
-
-      <v-col class="mb-5" cols="12">
-        <h2 class="headline font-weight-bold mb-3">What's next?</h2>
-
-        <v-row justify="center">
-          <a
-            v-for="(next, i) in whatsNext"
-            :key="i"
-            :href="next.href"
-            class="subheading mx-3"
-            target="_blank"
-          >
-            {{ next.text }}
-          </a>
-        </v-row>
-      </v-col>
-
-      <v-col class="mb-5" cols="12">
-        <h2 class="headline font-weight-bold mb-3">Important Links</h2>
-
-        <v-row justify="center">
-          <a
-            v-for="(link, i) in importantLinks"
-            :key="i"
-            :href="link.href"
-            class="subheading mx-3"
-            target="_blank"
-          >
-            {{ link.text }}
-          </a>
-        </v-row>
-      </v-col>
-
-      <v-col class="mb-5" cols="12">
-        <h2 class="headline font-weight-bold mb-3">Ecosystem</h2>
-
-        <v-row justify="center">
-          <a
-            v-for="(eco, i) in ecosystem"
-            :key="i"
-            :href="eco.href"
-            class="subheading mx-3"
-            target="_blank"
-          >
-            {{ eco.text }}
-          </a>
-        </v-row>
-      </v-col>
-    </v-row>
-  </v-container>
+  <v-card>
+    <v-card-title class="text-center justify-center py-6">
+      <h2 class="display-1 font-weight-bold">スタジアム周辺マップ</h2>
+    </v-card-title>
+    <v-tabs v-modelfixed-tabs bg-color="indigo-darken-2">
+      <v-tab href="#nara"> ロートフィールド奈良（奈良市鴻ノ池陸上競技場） </v-tab>
+      <v-tab href="#kashihara"> 橿原公苑陸上競技場 </v-tab>
+      <v-tab-item value="nara">
+        <Nara />
+      </v-tab-item>
+      <v-tab-item value="kashihara">
+        <Kashihara />
+      </v-tab-item>
+    </v-tabs>
+  </v-card>
 </template>
 
-<script lang="ts">
+<script>
 import Vue from "vue";
+import Kashihara from "./map/Kashihara";
+import Nara from "./map/Nara";
 
 export default Vue.extend({
   name: "MAP",
-
   data: () => ({}),
+
+  components: {
+    Kashihara,
+    Nara,
+  },
 });
 </script>
