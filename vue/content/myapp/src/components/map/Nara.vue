@@ -20,34 +20,14 @@ export default {
 
   computed: {},
   mounted: function () {
-    var markerLayer = new ol.layer.Vector({
-      source: new ol.source.Vector({
-        features: [
-          new ol.Feature({
-            geometry: new ol.geom.Point(ol.proj.fromLonLat([135.8285, 34.69722])),
-          }),
-        ],
-      }),
-      style: new ol.style.Style({
-        image: new ol.style.Icon({
-          anchor: [0.5, 46],
-          anchorXUnits: "fraction",
-          anchorYUnits: "pixels",
-          src: "https://openlayers.org/en/latest/examples/data/icon.png",
-        }),
-      }),
-    });
-
     // 地図の中心を指定します。表示する座標系に注意してください。
     let center = new transform([135.82840893, 34.69721741], "EPSG:4326", "EPSG:3857");
     var map = new Map({
       controls: false,
       layers: [
-        var wms_layer_map = new OpenLayers.Layer.WMS('Base layer','http://vmap0.tiles.osgeo.org/wms/vmap0',
-        { layers : 'basic'},
-        {	isBaseLayer : true}
-        );
-        markerLayer,
+        new TitleLayer({
+          source: new OSM(),
+        }),
       ],
       target: "map",
       view: new View({
@@ -55,6 +35,9 @@ export default {
         zoom: 17,
       }),
     });
+
+    const controls = map.getControls();
+    controls.forEach((control) => map.removeControl(control));
   },
   methods: {},
 };
