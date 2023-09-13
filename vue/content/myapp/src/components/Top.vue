@@ -1,23 +1,10 @@
 <template>
   <v-container>
-    <v-row class="text-center">
-      <v-col cols="12">
-        <v-img :src="require('../assets/logo.svg')" class="my-3" contain height="200" />
-      </v-col>
-
-      <v-col class="mb-4">
-        <h1 class="display-2 font-weight-bold mb-3">Welcome to Vuetify</h1>
-
-        <p class="subheading font-weight-regular">
-          For help and collaboration with other Vuetify developers,
-          <br />please join our online
-          <a href="https://community.vuetifyjs.com" target="_blank">Discord Community</a>
-        </p>
-      </v-col>
-
+    <router-link to="/map">まっぷぺーじ</router-link>
+    <v-spacer></v-spacer>
+    <v-row>
       <v-col class="mb-5" cols="12">
         <h2 class="headline font-weight-bold mb-3">Tickets</h2>
-
         <v-row justify="center">
           <a
             v-for="(next, i) in Tickets"
@@ -86,22 +73,16 @@ export default Vue.extend({
     ],
     Contents: [
       {
-        text: "観光MAP",
-        components: {
-          MAP,
-        },
+        text: "MAP",
+        href: "./MAP-app.vue",
       },
       {
         text: "芝被り体験",
-        components: {
-          AR,
-        },
+        href: "./AR-app.vue",
       },
       {
         text: "アップ体験",
-        components: {
-          AR,
-        },
+        href: "./AR-app.vue",
       },
     ],
     Premium: [
