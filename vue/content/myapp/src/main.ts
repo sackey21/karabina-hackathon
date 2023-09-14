@@ -3,10 +3,10 @@ import './plugins/axios'
 import App from './App.vue'
 import store from './store'
 import vuetify from './plugins/vuetify'
-
-import Top from './components/Top'
-import MAP from './components/MAP-app'
+import Top from './components/Top.vue'
+import MAP from './components/MAP-app.vue'
 import VueRouter from 'vue-router'
+import AR from './components/AR-app.vue'
 
 Vue.use(VueRouter)
  
@@ -22,6 +22,11 @@ const router = new VueRouter({
     path: '/map',
     name: 'map',
     component: MAP
+  },
+  {
+    path: '/ar',
+    name: 'ar',
+    component: AR
   },
 ]
 })

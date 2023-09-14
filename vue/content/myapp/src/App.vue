@@ -1,6 +1,7 @@
 <template>
   <div>
-    <Header />
+    <v-app>
+      <Header />
       <v-main>
         <router-view />
       </v-main>
@@ -17,7 +18,6 @@ export default Vue.extend({
   name: "App",
   components: {
     Header,
-    Top,
   },
 
   data: () => ({

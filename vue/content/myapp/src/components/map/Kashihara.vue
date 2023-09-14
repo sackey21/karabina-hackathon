@@ -1,6 +1,11 @@
 <template>
   <v-sheet class="pa-0" :light="true" width="100%" height="100vh">
-    <v-sheet id="map" class="pa-0" :light="true" style="width: 100%; height: 100vh">
+    <v-sheet
+      id="map-kashihara"
+      class="pa-0"
+      :light="true"
+      style="width: 100%; height: 100vh"
+    >
     </v-sheet>
   </v-sheet>
 </template>
@@ -29,7 +34,7 @@ export default {
           source: new OSM(),
         }),
       ],
-      target: "map",
+      target: "map-kashihara",
       view: new View({
         center: center,
         zoom: 17,

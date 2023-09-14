@@ -1,7 +1,5 @@
 <template>
   <v-container>
-    <router-link to="/map">まっぷぺーじ</router-link>
-    <v-spacer></v-spacer>
     <v-row>
       <v-col class="mb-5" cols="12">
         <h2 class="headline font-weight-bold mb-3">Tickets</h2>
@@ -21,15 +19,9 @@
       <v-col class="mb-5" cols="12">
         <h2 class="headline font-weight-bold mb-3">Contents</h2>
         <v-row justify="center">
-          <a
-            v-for="(link, i) in Contents"
-            :key="i"
-            :href="link.href"
-            class="subheading mx-3"
-            target="_blank"
-          >
-            {{ link.text }}
-          </a>
+          <router-link to="/map">MAP</router-link>
+          <router-link to="/ar">アップ体験</router-link>
+          <router-link to="/ar">芝被り体験</router-link>
         </v-row>
       </v-col>
 
@@ -69,20 +61,6 @@ export default Vue.extend({
       {
         text: "年間パス",
         href: "https://www.store-naraclub.jp/SHOP/207290/list.html",
-      },
-    ],
-    Contents: [
-      {
-        text: "MAP",
-        href: "./MAP-app.vue",
-      },
-      {
-        text: "芝被り体験",
-        href: "./AR-app.vue",
-      },
-      {
-        text: "アップ体験",
-        href: "./AR-app.vue",
       },
     ],
     Premium: [

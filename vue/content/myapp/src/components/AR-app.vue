@@ -1,128 +1,154 @@
 <template>
-  <v-container>
-    <v-row class="text-center">
-      <v-col cols="12">
-        <v-img :src="require('../assets/logo.svg')" class="my-3" contain height="200" />
-      </v-col>
-
-      <v-col class="mb-4">
-        <h1 class="display-2 font-weight-bold mb-3">Welcome to Vuetify</h1>
-
-        <p class="subheading font-weight-regular">
-          For help and collaboration with other Vuetify developers,
-          <br />please join our online
-          <a href="https://community.vuetifyjs.com" target="_blank">Discord Community</a>
-        </p>
-      </v-col>
-
-      <v-col class="mb-5" cols="12">
-        <h2 class="headline font-weight-bold mb-3">What's next?</h2>
-
-        <v-row justify="center">
-          <a
-            v-for="(next, i) in whatsNext"
-            :key="i"
-            :href="next.href"
-            class="subheading mx-3"
-            target="_blank"
-          >
-            {{ next.text }}
-          </a>
-        </v-row>
-      </v-col>
-
-      <v-col class="mb-5" cols="12">
-        <h2 class="headline font-weight-bold mb-3">Important Links</h2>
-
-        <v-row justify="center">
-          <a
-            v-for="(link, i) in importantLinks"
-            :key="i"
-            :href="link.href"
-            class="subheading mx-3"
-            target="_blank"
-          >
-            {{ link.text }}
-          </a>
-        </v-row>
-      </v-col>
-
-      <v-col class="mb-5" cols="12">
-        <h2 class="headline font-weight-bold mb-3">Ecosystem</h2>
-
-        <v-row justify="center">
-          <a
-            v-for="(eco, i) in ecosystem"
-            :key="i"
-            :href="eco.href"
-            class="subheading mx-3"
-            target="_blank"
-          >
-            {{ eco.text }}
-          </a>
-        </v-row>
-      </v-col>
-    </v-row>
-  </v-container>
+  <div id="AR"></div>
 </template>
-
-<script lang="ts">
-import Vue from "vue";
-
-export default Vue.extend({
+<script>
+import * as THREE from "three";
+import {
+  ArToolkitProfile,
+  ArToolkitSource,
+  ArToolkitContext,
+  ArMarkerControls,
+} from "@ar-js-org/ar.js/three.js/build/ar-threex.js";
+export default {
   name: "AR",
-
-  data: () => ({
-    ecosystem: [
-      {
-        text: "vuetify-loader",
-        href: "https://github.com/vuetifyjs/vuetify-loader",
-      },
-      {
-        text: "github",
-        href: "https://github.com/vuetifyjs/vuetify",
-      },
-      {
-        text: "awesome-vuetify",
-        href: "https://github.com/vuetifyjs/awesome-vuetify",
-      },
-    ],
-    importantLinks: [
-      {
-        text: "Documentation",
-        href: "https://vuetifyjs.com",
-      },
-      {
-        text: "Chat",
-        href: "https://community.vuetifyjs.com",
-      },
-      {
-        text: "Made with Vuetify",
-        href: "https://madewithvuejs.com/vuetify",
-      },
-      {
-        text: "Twitter",
-        href: "https://twitter.com/vuetifyjs",
-      },
-      {
-        text: "Articles",
-        href: "https://medium.com/vuetify",
-      },
-    ],
-    whatsNext: [
-      {
-        text: "Explore components",
-        href: "https://vuetifyjs.com/components/api-explorer",
-      },
-      {
-        text: "Select a layout",
-        href: "https://vuetifyjs.com/getting-started/pre-made-layouts",
-      },
-      {
-        text: "Frequently Asked Questions",
-        href: "https://vuetifyjs.com/getting-started/frequently-asked-questions",
-      },
-    ],
-  }),
-});
+  mounted() {
+    ArToolkitContext.baseURL = "./";
+    console.log("ARScene mounted");
+    // init renderer
+    var renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: true,
+    });
+    renderer.setClearColor(new THREE.Color("lightgrey"), 0);
+    // renderer.setPixelRatio( 2 );
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.domElement.style.position = "absolute";
+    renderer.domElement.style.top = "0px";
+    renderer.domElement.style.left = "0px";
+    document.body.appendChild(renderer.domElement); // We should be able to specify an html element to append AR.js related elements to.
+    // array of functions for the rendering loop
+    var onRenderFcts = [];
+    // init scene and camera
+    var scene = new THREE.Scene();
+    //////////////////////////////////////////////////////////////////////////////////
+    //      Initialize a basic camera
+    //////////////////////////////////////////////////////////////////////////////////
+    // Create a camera
+    var camera = new THREE.Camera();
+    scene.add(camera);
+    const artoolkitProfile = new ArToolkitProfile();
+    artoolkitProfile.sourceWebcam(); // Is there good reason for having a function to set the sourceWebcam but not the displayWidth/Height etc?
+    // add existing parameters, this is not well documented
+    let additionalParameters = {
+      // Device id of the camera to use (optional)
+      deviceId: null,
+      // resolution of at which we initialize in the source image
+      sourceWidth: 640,
+      sourceHeight: 480,
+      // resolution displayed for the source
+      displayWidth: 640,
+      displayHeight: 480,
+    };
+    Object.assign(artoolkitProfile.sourceParameters, additionalParameters);
+    console.log(artoolkitProfile.sourceParameters); // now includes the additionalParameters
+    const arToolkitSource = new ArToolkitSource(artoolkitProfile.sourceParameters);
+    arToolkitSource.init(function onReady() {
+      onResize();
+    });
+    // handle resize
+    window.addEventListener("resize", function () {
+      onResize();
+    });
+    // resize is not called for the canvas on init. The canvas with the cube seems to be resized correctly at start.
+    // Is that maybe a vue-specific problem?
+    function onResize() {
+      arToolkitSource.onResizeElement();
+      arToolkitSource.copyElementSizeTo(renderer.domElement);
+      if (arToolkitContext.arController !== null) {
+        arToolkitSource.copyElementSizeTo(arToolkitContext.arController.canvas);
+      }
+    }
+    ////////////////////////////////////////////////////////////////////////////////
+    //          initialize arToolkitContext
+    ////////////////////////////////////////////////////////////////////////////////
+    // create atToolkitContext
+    var arToolkitContext = new ArToolkitContext({
+      debug: false,
+      cameraParametersUrl: ArToolkitContext.baseURL + "data/camera_para.dat",
+      detectionMode: "mono",
+      canvasWidth: 640,
+      canvasHeight: 490,
+      imageSmoothingEnabled: true, // There is still a warning about mozImageSmoothingEnabled when using Firefox
+    });
+    // initialize it
+    arToolkitContext.init(function onCompleted() {
+      // copy projection matrix to camera
+      camera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix());
+    });
+    // update artoolkit on every frame
+    onRenderFcts.push(function () {
+      if (arToolkitSource.ready === false) return;
+      arToolkitContext.update(arToolkitSource.domElement);
+    });
+    ////////////////////////////////////////////////////////////////////////////////
+    //          Create a ArMarkerControls
+    ////////////////////////////////////////////////////////////////////////////////
+    var markerGroup = new THREE.Group();
+    scene.add(markerGroup);
+    var markerControls = new ArMarkerControls(arToolkitContext, markerGroup, {
+      type: "pattern",
+      patternUrl: ArToolkitContext.baseURL + "data/patt.hiro",
+      smooth: true,
+      smoothCount: 5,
+      smoothTolerance: 0.01,
+      smoothThreshold: 2,
+    });
+    //////////////////////////////////////////////////////////////////////////////////
+    //      add an object in the scene
+    //////////////////////////////////////////////////////////////////////////////////
+    var markerScene = new THREE.Scene();
+    markerGroup.add(markerScene);
+    var mesh = new THREE.AxesHelper();
+    markerScene.add(mesh);
+    // add a torus knot
+    var geometry = new THREE.BoxGeometry(1, 1, 1);
+    var material = new THREE.MeshNormalMaterial({
+      transparent: true,
+      opacity: 0.5,
+      side: THREE.DoubleSide,
+    });
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.y = geometry.parameters.height / 2;
+    markerScene.add(mesh);
+    geometry = new THREE.TorusKnotGeometry(0.3, 0.1, 64, 16);
+    material = new THREE.MeshNormalMaterial();
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.y = 0.5;
+    markerScene.add(mesh);
+    onRenderFcts.push(function (delta) {
+      mesh.rotation.x += delta * Math.PI;
+    });
+    //////////////////////////////////////////////////////////////////////////////////
+    //      render the whole thing on the page
+    //////////////////////////////////////////////////////////////////////////////////
+    onRenderFcts.push(function () {
+      renderer.render(scene, camera);
+    });
+    // run the rendering loop
+    var lastTimeMsec = null;
+    requestAnimationFrame(function animate(nowMsec) {
+      // keep looping
+      requestAnimationFrame(animate);
+      // measure time
+      lastTimeMsec = lastTimeMsec || nowMsec - 1000 / 60;
+      var deltaMsec = Math.min(200, nowMsec - lastTimeMsec);
+      lastTimeMsec = nowMsec;
+      // call each update function
+      onRenderFcts.forEach(function (onRenderFct) {
+        onRenderFct(deltaMsec / 1000, nowMsec / 1000);
+      });
+    });
+  },
+};
 </script>
+<style></style>
